@@ -1,0 +1,625 @@
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+import {
+  Link,
+  hashHistory
+} from 'react-router';
+//import Using ES6 syntax
+
+import WeUI from 'react-weui';
+import { createStore, bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+require("../util/jquery-weui.min.js");
+import * as mAction from '../actions/maintenance'
+var wx = require("weixin-js-sdk");
+var weui = require('weui');
+import 'weui/dist/style/weui.min.css';
+require('../../css/jquery-weui.min.css');
+require("../../font/iconfont.css");
+require("../../css/common.css");
+require("../../css/maintenance.css");
+
+class Maintenance extends Component{
+	constructor(props,context){
+		super(props,context)
+		this.state={
+			work:'木工',
+			name:'',
+			phone:'',
+			time:'',
+			componey:"",
+			email:'',
+			version:'',
+			subscrib:'',
+			click:false,
+			user:'',
+			hardwareMsg:'',
+			factoryname:'',
+			MaintainerName:'',
+			MaintainerPhone:'',
+			remark:''
+		}
+		this.context.router;
+		this.changeWork = this.changeWork.bind(this)
+	}
+	componentDidUpdate(){
+		$(window).scrollTop(0);
+		$(".picker-button.close-picker").css('display','none');
+		$(".weui-dialog__ft .weui-dialog__btn.primary").html("确定");
+	}
+	componentWillUnmount(){
+		this.props.maintenance.submit={};
+	}
+	componentDidMount(){
+		let a = new Date();
+		let error = this.props.params.error;
+		this.setState({
+			subscrib:error
+		});
+       	let year = a.getFullYear().toString();
+       	let mon = (a.getMonth()+1).toString();
+       	let day = a.getDate().toString();
+       	let hour = a.getHours().toString();
+       	let min = a.getMinutes().toString();
+       	if(mon<=9){
+       		mon="0"+mon;
+       	}
+       	if(hour<=0){
+       		hour="0"+hour;
+       	}
+       	if(min<=9){
+       		min="0"+min;
+       	}
+       	if(day<=9){
+       		day="0"+day;
+       	}
+       	let date = year+"-"+mon+"-"+day+" "+hour+":"+min;
+       	this.props.mAction.timeChange(date);
+		$(".toolbar").css("display","none");
+		var that = this;
+		if(sessionStorage.user){
+			let user = JSON.parse(sessionStorage.user);
+            this.setState({
+                user:JSON.parse(sessionStorage.user),
+                phone:user.phone,
+                name:user.username
+            })
+        }else{
+            let url = window.location.href;
+            url = url.split("view")[0]+"view/prop.html";
+            //window.location.href=url;
+        }
+      this.props.mAction.wechat();
+		
+	}
+	changeWork(e){
+		this.setState({
+			work:e.target.value
+		})
+	}
+	name(e){
+		this.setState({
+			name:$.trim(e.target.value)
+		})
+	}
+	phoneChange(e){
+		//const rule = /^1[34578]\d{9}$/;
+		
+		this.setState({
+			phone:$.trim(e.target.value)
+		})
+		
+	}
+	componeyChange(e){
+		this.setState({
+			componey:$.trim(e.target.value)
+		})			
+	}
+	email(e){
+		//const reg=/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((.[a-zA-Z0-9_-]{2,3}){1,2})$/;
+		
+		this.setState({
+			email:$.trim(e.target.value)
+		})
+		
+			
+	}
+	version(e){
+		this.setState({
+			version:$.trim(e.target.value)
+		})			
+	}
+	subscrib(e){
+		this.setState({
+			subscrib:$.trim(e.target.value)
+		})	
+	}
+	factoryname(e){
+		this.setState({
+			factoryname:$.trim(e.target.value)
+		})
+	}
+	hardwareMsg(e){
+		this.setState({
+			hardwareMsg:$.trim(e.target.value)
+		})
+	}
+	MaintainerName(e){
+		this.setState({
+			MaintainerName:$.trim(e.target.value)
+		})
+	}
+	MaintainerPhone(e){
+		this.setState({
+			MaintainerPhone:$.trim(e.target.value)
+		})
+	}
+	remark(e){
+		this.setState({
+			remark:$.trim(e.target.value)
+		})
+	}
+	time(){
+		var that = this;
+		$("#datetime-picker").datetimePicker({
+			onOpen:function(){},
+			title:'请选择时间',
+			onChange: function (picker, values, displayValues) {
+         		let val = values.splice(0,3).join("-");
+		        let minute = values.splice(-0,4).join(":");
+		        let times = val+" "+minute;
+		        that.props.mAction.timeChange(times)
+        	}
+		});
+		
+	}
+	submit(){
+		const mobile = /^1[34578]\d{9}$/;
+		const reg=/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((.[a-zA-Z0-9_-]{2,3}){1,2})$/;
+		if(!mobile.test(this.state.phone)){
+			this.setState({
+				phone:''
+			})
+		}
+		if(!reg.test(this.state.email)){
+			this.setState({
+				email:''
+			})
+		}
+		this.setState({
+			click:true
+		})
+		console.log(this.state);
+		if(this.state.email!==""&&this.state.work!==""&&this.state.version!==""){
+			let obj = {};
+			obj.names = this.state.name;
+			obj.phone = this.state.phone;
+			obj.time = this.props.maintenance.time;
+			obj.company = this.state.componey;
+			obj.email = this.state.email;
+			obj.factoryname = this.state.factoryname;
+			obj.industry = this.state.work;
+			obj.softversion = this.state.version;
+			obj.hardwareMsg = this.state.hardwareMsg;
+			obj.description = this.state.subscrib;
+			obj.MaintainerName = this.state.MaintainerName;
+			obj.MaintainerPhone = this.state.MaintainerPhone;
+			obj.remark = this.state.remark;
+			this.props.mAction.submitValue(obj)
+		}else{
+
+		}
+	}
+	convertBase64UrlToBlob(urlData){
+
+        var bytes=window.atob(urlData.split(',')[1]);        //去掉url的头，并转换为byte
+
+        //处理异常,将ascii码小于0的转换为大于0
+        var ab = new ArrayBuffer(bytes.length);
+        var ia = new Uint8Array(ab);
+        for (var i = 0; i < bytes.length; i++) {
+            ia[i] = bytes.charCodeAt(i);
+        }
+
+        return new Blob( [ab] , {type : 'image/png'});
+    }
+	uploadChange(event){
+		var that = this;
+		var allowTypes = ['image/jpg', 'image/jpeg', 'image/png', 'image/gif'];  
+	    // 1024KB，也就是 1MB  
+	    var maxSize = 2048 * 2048;  
+	    // 图片最大宽度  
+	    var maxWidth = 100000;  
+	    // 最大上传图片数量  
+	    var maxCount = 6;  
+	    var files = event.target.files; 
+	    // 如果没有选中文件，直接返回  
+        if (files.length === 0) {  
+          return;  
+        }  
+        for (var i = 0, len = files.length; i < len; i++) {  
+            var file = files[i];  
+            var reader = new FileReader();  
+	        // 如果类型不在允许的类型范围内  
+	        if (allowTypes.indexOf(file.type) === -1) {  
+	            $.alert("该类型不允许上传！", "警告！");              
+	          	continue;  
+	        }  
+	        if (file.size > maxSize) {  
+	          $.alert({text: '图片太大，不允许上传'});
+	            $.alert("图片太大，不允许上传", "警告！");              
+	            continue;  
+	        }  
+            if ($('.weui-uploader__file').length >= maxCount) {  
+              $.alert({text: '最多只能上传' + maxCount + '张图片'});  
+              $(".weui-uploader__input-box").css("display","none");
+              return;  
+            }  
+            reader.readAsDataURL(file);  
+            reader.onload = function (e) {
+                var img = new Image(); 
+                img.src = e.target.result;   
+                img.onload = function () {  
+                    // 不要超出最大宽度  
+                    var w = Math.min(maxWidth, img.width);  
+                    $("#warn").css("display","inline-block");
+                    $("#warn").text("图片上传中...");
+
+                    // 高度按比例计算  
+                    var h = img.height * (w / img.width);  
+                    var canvas = document.createElement('canvas');  
+                    var ctx = canvas.getContext('2d');  
+                    // 设置 canvas 的宽度和高度  
+                    canvas.width = w;  
+                    canvas.height = h;  
+                    ctx.drawImage(img, 0, 0, w, h); 
+                    var base64 = canvas.toDataURL('image/png',0.8);  
+                    // 插入到预览区  
+                    var $preview = $('<li class="weui-uploader__file weui-uploader__file_status" style="background-image:url(' + img.src + ')" ><div class="weui-uploader__file-content"></div></li>');  
+                    $('#uploaderFiles').append($preview);  
+                    var num = $('.weui-uploader__file').length; 
+                    $('.weui-uploader__info').text(num / maxCount); 
+                    
+                  	var i=79;
+
+                  	var interval = setInterval(function(){
+                 		
+                  		if(i>=1){
+	                  		i = i-1;
+	                  		let j =  Math.ceil(i/79*100)+"%";
+	                  		//$(".weui-uploader__file-content").html(j)
+                  		}else{
+                  			clearInterval(this.interval)
+
+                  		}
+                  	},10)
+                    var formData = new FormData();
+                    formData.append("whimg", file);
+                    var image = new Image();
+                    image.src = canvas.toDataURL("image/png");
+                    console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+                    var file = that.convertBase64UrlToBlob(image.src);
+                    console.log(file)  
+ 					//if(files[0].size>500000){
+	    				//$.alert({
+						  //text: '文件太大，不允许上传',
+						 
+						//});
+						//$("ul li:last-child").remove();
+	    			//}else{
+	        			$.ajax({
+	        				//url:"https://nccloud.weihong.com.cn/nccloudOLhelp/search/saveimg",
+	        				url:"http://172.16.11.70:3008/search/saveimg?",
+	        				type:"POST",
+	        				data:formData,
+	        				contentType:false,
+                            processData:false,
+	        				success:function(msg){
+	        					//if(msg.success){
+	        						$(".change").css('animation','myfirst '+ e.total+"ms");
+                  					$('head').append("<style>.weui-uploader__file_status::before{animation:myfirst "+1000+"ms;animation-fill-mode:forwards }</style>");
+                  					$("#warn").text("上传成功！");
+                  					setTimeout(function(){$("#warn").css("display","none")},1500)
+	        					//}else{
+	        						//$("ul li:last-child").remove();
+	        					//}
+
+	        				},
+	        				error:function(err){
+	        				}
+
+	        			})
+	   
+        			//}
+                };  
+                      
+                                    
+                };
+
+                    
+            }  
+	}
+	render(){
+		if(this.props.maintenance.submit.result=="success"){
+			$.alert("提交成功！");
+			var that = this;
+			$(".weui-dialog__btn.primary").on("click",function(){
+				that.context.router.push("/")
+			})
+		}else if(this.props.maintenance.submit.result=="fail"){
+			$.alert(this.props.maintenance.submit.message);
+		}
+		$(".weui-dialog__ft .weui-dialog__btn.primary").html("确定");
+		$(".weui-dialog__btn.primary").text("确定");
+		        //初始化微信接口
+		let wechat = this.props.maintenance.wechat;
+        if (JSON.stringify(wechat)!=="{}") {
+            wx.config({
+                debug: false,
+                appId: wechat.values.appId,
+                timestamp: wechat.values.timestamp,
+                nonceStr: wechat.values.nonceStr,
+                signature: wechat.values.signature,
+                jsApiList: [
+                    'checkJsApi',
+                    'onMenuShareTimeline',
+                    'onMenuShareAppMessage',
+                    'onMenuShareQQ',
+                    'onMenuShareQZone',
+                    'showMenuItems',
+                    "showOptionMenu"
+                ],
+
+            });
+        }
+		return (
+			<div className="maintenance">
+				<img src="http://pcdn.mikecrm.com/ugc_2_e/pub/70/707662fa1d3de9acce7210f912af7dbd/form/image/52507530ca79f9fdd9ae4c34366deedc.png" style={{width:"100%"}}/>
+				<div className="group" style={{margin:'10px auto'}}>
+					<div className="head">说 明</div>
+					<span className="explain">尊敬的客户/用户，请将您在维宏软件操作途中遇到的问题按照表格的填写完整，我们会及时处理您的反馈，保持手机通畅。谢谢！</span>
+				</div>
+				<div className="group">
+					<div className="text">
+						<p className="fbc_title">
+							<span className="name">联系人</span>
+							<span className="star">*</span>
+						</p>
+						<p className="error" style={{display:this.state.name==""&&this.state.click ? "block" : "none"}}>输入为空或格式错误，请您重新填写</p>
+					</div>
+					<div>
+						<div className="inputbox">
+							<i className="iconfont">&#xe72c;</i>
+							<input type="text" value={this.state.name} onChange={this.name.bind(this)}/>
+						</div>
+					</div>
+				</div>
+				<div className="group">
+					<div className="text">
+						<p className="fbc_title">
+							<span className="name">联系方式</span>
+							<span className="star">*</span>
+						</p>
+						<p className="error" style={{display:this.state.phone==""&&this.state.click ? "block" : "none"}}>输入为空或格式错误，请您重新填写</p>
+					</div>
+					<div>
+						<div className="inputbox">
+							<i className="iconfont">&#xe615;</i>
+							<input type="text" value={this.state.phone} onChange={this.phoneChange.bind(this)}/>
+						</div>
+					</div>
+				</div>
+				<div className="group">
+					<div className="text">
+						<p className="fbc_title">
+							<span className="name">反馈时间</span>
+							<span className="star">*</span>
+						</p>
+						<p className="error" style={{display:this.props.maintenance.time==""&&this.state.click ? "block" : "none"}}>输入为空或格式错误，请您重新填写</p>
+					</div>
+					<div>
+						<div className="inputbox">
+							<i className="iconfont">&#xe72c;</i>
+							<input type="text" id='datetime-picker' onClick={this.time.bind(this)} value={this.props.maintenance.time} readOnly/>
+						</div>
+					</div>
+				</div>
+				<div className="group">
+					<div className="text">
+						<p className="fbc_title">
+							<span className="name">公司</span>
+							<span className="star">*</span>
+						</p>
+						<p className="error" style={{display:this.state.componey==""&&this.state.click ? "block" : "none"}}>输入为空或格式错误，请您重新填写</p>
+					</div>
+					<div>
+						<div className="inputbox">
+							<i className="iconfont">&#xe72a;</i>
+							<input type="text" onChange={this.componeyChange.bind(this)} value={this.state.componey}/>
+						</div>
+					</div>
+				</div>
+				<div className="group">
+					<div className="text">
+						<p className="fbc_title">
+							<span className="name">邮箱</span>
+							<span className="star">*</span>
+						</p>
+						<p className="error" style={{display:this.state.email==""&&this.state.click ? "block" : "none"}}>输入为空或格式错误，请您重新填写</p>
+					</div>
+					<div>
+						<div className="inputbox other">
+							<input type="text" value={this.state.email} onChange={this.email.bind(this)}/>
+						</div>
+					</div>
+				</div>
+				<div className="group">
+					<div className="text">
+						<p className="fbc_title">
+							<span className="name">机械厂家名称</span>
+						</p>
+					</div>
+					<div>
+						<div className="inputbox other">
+							<input type="text" value={this.state.factoryname} onChange={this.factoryname.bind(this)}/>
+						</div>
+					</div>
+				</div>
+				<div className="group">
+					<div className="text">
+						<p className="fbc_title">
+							<span className="name">所属行业</span>
+							<span className="star">*</span>
+						</p>
+					</div>
+					<div>
+						<div className="inputbox other">
+							<i className="iconfont arror" >&#xe600;</i>
+							<select name="work" id="work" value={this.state.work} onChange={this.changeWork}>
+								<option value='木工'>木工</option>
+					            <option value='水切割'>水切割</option>
+					            <option value='激光'>激光</option>
+					            <option value='3c'>3C</option>
+					            <option value='其他'>其他</option>
+							</select>
+						</div>
+					</div>
+				</div>
+				<div className="group">
+					<div className="text">
+						<p className="fbc_title">
+							<span className="name">软件版本</span>
+							<span className="star">*</span>
+						</p>
+						<p className="error" style={{display:this.state.version==""&&this.state.click ? "block" : "none"}}>输入为空或格式错误，请您重新填写</p>
+					</div>
+					<div>
+						<div className="inputbox other">
+							<input type="text" value={this.state.version} onChange={this.version.bind(this)}/>
+						</div>
+					</div>
+				</div>
+				<div className="group">
+					<div className="text">
+						<p className="fbc_title">
+							<span className="name">硬件信息</span>
+						</p>
+					</div>
+					<div>
+						<div className="inputbox other">
+							<input type="text" value={this.state.hardwareMsg} onChange={this.hardwareMsg.bind(this)}/>
+						</div>
+					</div>
+				</div>
+				<div className="group">
+					<div className="text">
+						<p className="fbc_title">
+							<span className="name">问题描述</span>
+							<span className="star">*</span>
+						</p>
+						<p className="error" style={{display:this.state.subscrib==""&&this.state.click ? "block" : "none"}}>输入为空或格式错误，请您重新填写</p>
+					</div>
+					<div>
+						<div className="inputbox other textarea">
+							<textarea type="text" value={this.state.subscrib} onChange={this.subscrib.bind(this)}></textarea>
+						</div>
+					</div>
+				</div>
+				<div className="group">
+					<div className="text">
+						<p className="fbc_title">
+							<span className="name">维宏技术维护人员姓名</span>
+						</p>
+					</div>
+					<div>
+						<div className="inputbox other">
+							<input type="text" value={this.state.MaintainerName} onChange={this.MaintainerName.bind(this)}/>
+						</div>
+					</div>
+				</div>
+				<div className="group">
+					<div className="text">
+						<p className="fbc_title">
+							<span className="name">维宏技术维护人员联系方式</span>
+						</p>
+					</div>
+					<div>
+						<div className="inputbox other">
+							<input type="text" value={this.state.MaintainerPhone} onChange={this.MaintainerPhone.bind(this)}/>
+						</div>
+					</div>
+				</div>
+				<div className="group">
+					<div className="text">
+						<p className="fbc_title">
+							<span className="name">备注</span>
+						</p>
+					</div>
+					<div>
+						<div className="inputbox other textarea">
+							<textarea type="text" value={this.state.remark} onChange={this.remark.bind(this)}></textarea>
+						</div>
+					</div>
+				</div>
+				<div className="group attachment">
+					<div className="text" >
+						<p className="fbc_title">
+							<span className="name">附件</span>
+						</p>
+						<p>
+							<span className="file">请将您所有的文件以图片的格式上传
+							</span>
+						</p>
+					</div>
+					<div className="fbc_ufContent">
+						<div className="weui-cells weui-cells_form" >
+						  <div className="weui-cell">
+						    <div className="weui-cell__bd">
+						      <div className="weui-uploader">
+						        <div className="weui-uploader__hd">
+						          <p className="weui-uploader__title">图片上传
+						          	&nbsp;<span id="warn">ttututt</span>
+						          </p>
+						        
+						        </div>
+						        <div className="weui-uploader__bd">
+						          <ul className="weui-uploader__files" id="uploaderFiles">
+						             
+						          </ul>
+						          <div className="weui-uploader__input-box">
+						            <input id="uploaderInput" className="weui-uploader__input" type="file" accept="image/*" multiple="" onChange={this.uploadChange.bind(this)}/>
+						          </div>
+						        </div>
+						      </div>
+						    </div>
+						  </div>
+						</div>
+						<div className="submitWrapper">
+							<div className="submit">
+								<a className="fb_submitBtn" onClick={this.submit.bind(this)}>提交</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		)
+	}
+}
+Maintenance.contextTypes = {
+	router: React.PropTypes.object,
+}
+function mapStateToProps(state) {
+    return {
+        maintenance:state.maintenance
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        mAction:bindActionCreators(mAction, dispatch)
+    }
+}
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Maintenance);

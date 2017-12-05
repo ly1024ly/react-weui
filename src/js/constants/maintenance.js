@@ -1,0 +1,5 @@
+export const SUBMIT = 'SUBMIT'
+export const TIME = 'TIME'
+export const WECHAT = 'WECHAT'
+export const IMAGE = 'IMAGE'
+export const CLEARDATA = 'CLEARDATA'

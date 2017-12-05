@@ -1,0 +1,6 @@
+export const WECHAT = 'WECHAT'
+export const ERROR_SEARCH = 'ERROR_SEARCH'
+export const QRCODE_PAGE = 'QRCODE_PAGE'
+export const QRCODE_VALUE = 'QRCODE_VALUE'
+export const QRCODE_ALL = 'QRCODE_ALL'
+export const SAVEWARNING = 'SAVEWARNING'
