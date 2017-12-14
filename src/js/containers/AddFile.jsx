@@ -17,12 +17,14 @@ import 'weui/dist/style/weui.min.css';
 require("../../font/iconfont.css");
 require("../../css/common.css");
 require("../../css/addfile.css");
+import * as fileAction from '../actions/addfile'
 
 class AddFile extends Component{
 	constructor(props,context){
 		super(props,context);
 		this.state={
-			val:""
+			val:"",
+			book:''
 		}
 		this.saveValue = this.saveValue.bind(this);
 		this.checkValue = this.checkValue.bind(this);
@@ -32,11 +34,46 @@ class AddFile extends Component{
 			val:e.target.value
 		})
 	}
+	componentDidMount(){
+		
+	}
+	addMenu(res){
+		console.log(res)
+		this.setState({
+			book:res.bookname
+		});
+		let obj = {};
+		obj.username = "yang6";
+		obj.bookid = res.id;
+		obj.bookname = res.bookname;
+		obj.ifsecrecy = true;
+		this.props.fileAction.addMenu(obj);
+	}
 	checkValue(){
-
+		this.props.fileAction.list(this.state.val)
 	}
 	render(){
 		let a = "hhh";
+		let addFile;
+		if(this.props.addfile.success&&this.props.addfile.success.result=="success"){
+			$.toast("添加成功");
+		}
+		if(this.props.addfile.add.result&&this.props.addfile.add.result=="success"){
+			addFile = this.props.addfile.add.message.map(function(item,index){
+			 	return (
+			 		<li key={index}>
+			 			<div className="cbox" key={index} >
+						    <a className="weui-cell weui-cell_access"  key={index} >
+						        <div className="weui-cell__bd">
+						    		<p>{item.bookname}</p>
+						        </div>
+						    	<i className="iconfont icon-add" onClick={this.addMenu.bind(this,item)}>&#xe601;</i>
+						    </a>
+						</div>
+					</li>
+			 	)
+			},this)
+		}
 		return(
 			<div>
 				<div className="content addfile">
@@ -56,12 +93,15 @@ class AddFile extends Component{
 					  		 </div>
 						</div>
 						<div className="search-btn">
-							<Link to={`//${JSON.stringify(a)}`}><label className="btn" 
-							onClick={this.checkValue} >搜索产品文档</label></Link>
+							<label className="btn" 
+							onClick={this.checkValue} >搜索产品文档</label>
 						</div>
 					</div>
 					<div>
 						<span className="warn">提示：本页仅显示可公开文档；对于保密文档，请联系设备商获取二维码后扫码添加.</span>
+						<ul>
+						{addFile}
+						</ul>
 					</div>
 				</div>
 			</div>
@@ -75,12 +115,12 @@ AddFile.contextTypes = {
 
 function mapStateToProps(state, ownProps){
   return {
-   
+   addfile:state.addfile
   }
 }
 function mapDispatchToProps(dispatch) {
   return {
-    
+     fileAction:bindActionCreators(fileAction,dispatch)
   }
 } 
 

@@ -49,7 +49,7 @@ class Qrcode extends Component {
         }else{
             let url = window.location.href;
             url = url.split("view")[0]+"view/prop.html";
-            window.location.href=url;
+            //window.location.href=url;
         }   
         this.props.qrAction.wechat();
         var that = this;

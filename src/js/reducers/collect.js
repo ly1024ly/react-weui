@@ -9,7 +9,8 @@ const initialState = {
 	val:{},
 	max:{},
 	save:{},
-	page:{}
+	page:{},
+	
 }
 let collect = {}
 let del = {}

@@ -28,6 +28,7 @@ class Collect extends Component {
 			val:'',
 			page:1,
 			user:{},
+			back:0
 		}
 		this.blurEvent = this.blurEvent.bind(this);
 		this.saveVal = this.saveVal.bind(this);
@@ -65,7 +66,7 @@ class Collect extends Component {
 		}else{
 			let url = window.location.href;
 			url = url.split("view")[0]+"view/prop.html";
-			window.location.href=url;
+			//window.location.href=url;
 		}
 		
 	}
@@ -159,7 +160,6 @@ class Collect extends Component {
 		hashHistory.push(path);
 	}
 	componentDidUpdate(){
-		$(window).scrollTop(0);	
 		//flag确定是否删除的标志在action里添加
 		if(this.props.collect.collect.flag){
 			window.location.reload();
@@ -170,6 +170,14 @@ class Collect extends Component {
 	}
 	qrcode(){
 		this.context.router.push("qrcode")
+	}
+	touchEvent(index,e){
+		console.log("gfdgfd");
+		console.log(index)
+		console.log($(".weui-cells .x"))
+		this.setState({
+			back:index
+		})
 	}
 	pageChange(res){
 		let max = this.props.collect.chart.message.Maxpage;
@@ -259,10 +267,12 @@ class Collect extends Component {
     	if(result&&result.result==="success"){
     		menu = result.message.map(function(item,index){
     			let display = this.props.collect.title&&this.props.collect.title.del == item.result.topicid ? "none" : "block"
+    			let width = this.state.back===index ? "" : "back";
+    			let show = this.state.back===index ? "block" : "none";
     			return (
-    			<div className="x" key={index} >
-    				<div className="cbox" key={index} style={{display:display}}>
-	    				<a className="weui-cell weui-cell_access" onClick={this.iframePage.bind(this,item)} key={index}>
+    			<div className="x" key={index} onTouchMove={this.touchEvent.bind(this,index)} >
+    				<div className={"cbox "+width} key={index} style={{display:display}} >
+	    				<a className={"weui-cell weui-cell_access "+width} onClick={this.iframePage.bind(this,item)} key={index}>
 						    <div className="weui-cell__bd">
 						      <p>{item.result.title}</p>
 						      <div className="collect_title">{item.result.ContentType}</div>
@@ -270,7 +280,7 @@ class Collect extends Component {
 						    <div className="weui-cell__ft">
 						    </div>
 						</a>
-						<div onClick={this.delete.bind(this,item)} className="delete">
+						<div onClick={this.delete.bind(this,item)} className="delete" style={{display:show}}>
 						    删除
 						</div>
 						<div className="clear"></div>
@@ -287,6 +297,7 @@ class Collect extends Component {
 		let child;
 
 		if(chart&&chart.result=="success"&&chart.message||chart&&chart.chart&&chart.chart.result=="success"){
+			$(window).scrollTop(0);	
 			if(chart&&chart.result=="success"&&chart.message.objArray){
 				max = chart.message.Maxpage;
 				child = chart.message.objArray.map(function(item,index){

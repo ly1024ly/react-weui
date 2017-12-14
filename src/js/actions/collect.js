@@ -130,42 +130,6 @@ export function page(pre){
 }
 
 
-//清除数据
-// export function clear(){
-	
-// 	return dispatch =>{
-// 		dispatch({type:'CLEAR'})
-// 	}
-// }
-
-// export function saveValue(obj,a){
-
-//   return dispatch =>{
-//     console.log(obj);
-//     if(obj.chart){
-//     	dispatch({type:'SEARCH_ALL',chart:obj.chart})
-//     }
-//     if(obj.current){
-//     	dispatch({type:'CURRENT',current:obj.current})
-//     }
-//    	if(a){
-//    		dispatch({type:'SELECT_MESSAGE',val:a})
-//    	}
-//   }
-// }
-
-// export function saveValue(obj,a,page){
-// 	console.log(obj,a)
-// 	return dispatch =>{
-// 		dispatch({type:'PAGE',page:page})
-// 	   if(obj.save){
-// 	   	dispatch({type:"VAL_COLLECT",val:a})
-// 	   }else{
-// 	   	dispatch({type:"SAVE_COLLECT",save:obj,val:a})
-// 	   }
-	   
-// 	}
-// }
 //进入iframe页面时将搜藏的值和搜索框的值存下来
 export function saveValue(obj,str){
 	return dispatch => {
@@ -191,3 +155,4 @@ export function inputVal(data){
 		dispatch({type:'INPUT_VALUE',val:data})
 	}
 }
+

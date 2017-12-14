@@ -6,6 +6,7 @@ import collect from './collect'
 import iframe from './iframe'
 import qrcode from './qrcode'
 import maintenance from './maintenance'
+import addfile from './addfile'
 
 const rootReducer = combineReducers({
   fileSearch,
@@ -14,6 +15,7 @@ const rootReducer = combineReducers({
   collect,
   iframe,
   qrcode,
+  addfile,
   maintenance
 })
 

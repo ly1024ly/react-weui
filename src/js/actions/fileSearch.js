@@ -56,10 +56,13 @@ export function page(pre){
 export function file(name,token){
 
   const ourl = baseUrl + "user/titlelist/?username="+name+"&token="+token;
+  const text = "http://172.16.11.71:3008/search/addCatalog?"
   return dispatch => {
-    return fetch(ourl)
+    return fetch(text)
       .then(res => res.json())
       .then(json => {
+        console.log("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
+        console.log(json)
         dispatch({type:'CURRENT_PAGE',data:json})
       })
         

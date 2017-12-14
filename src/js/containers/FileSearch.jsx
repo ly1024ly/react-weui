@@ -51,8 +51,10 @@ class FileSearch extends Component {
 		this.propSearch = this.propSearch.bind(this);
 		this.clearProp = this.clearProp.bind(this);
 		this.unsubscribe = store.subscribe(() =>
-      		this.forceUpdate()
+      		this.forceUpdate(store.getState())
+      		 //console.log(store.getState())
     	);
+
 	}
 	componentWillMount(){
 		if(sessionStorage.user){
@@ -75,8 +77,9 @@ class FileSearch extends Component {
 			//window.location.href=url;
 		}
 	}
-	forceUpdate(){
-		console.log("sha dong ")
+	forceUpdate(res){
+	console.log("forceupdate$$$$$$$$$$$$$$$$$$$$$$")
+		console.log(res)
 	}
 	clearProp(){
 		$(".hint").css("display","none")
@@ -272,6 +275,7 @@ class FileSearch extends Component {
 	}
     render() {
     	let list;
+    	console.log("************************")
     	console.log(this.props.fileSearch)
     	let wechat = this.props.fileSearch.wechat;
     	if(wechat){
@@ -333,7 +337,7 @@ class FileSearch extends Component {
 			 			<div className="cbox" key={index} >
 						    <Link className="weui-cell weui-cell_access" activeClassName="active" key={index} to={`/fileone/${item.firtcontent}`}>
 						        <div className="weui-cell__bd">
-						    		<p>{item.firtcontent}</p>
+						    		<p>{item.bookname}</p>
 						        </div>
 						    	<div className="weui-cell__ft">
 						    	</div>
@@ -435,7 +439,6 @@ class FileSearch extends Component {
 					<div className="weui-cells" onFocus={this.clearProp}>
 						<ul id="itemContainer">
 							{list}
-							<li><input type="text" onChange={this.selectChange.bind(this)} /></li>
 						</ul>
 					</div>
 					<div className="holder" style={{display:display}}>
