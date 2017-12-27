@@ -23,32 +23,7 @@ import AddFile from './containers/AddFile.jsx';
 const store = configureStore();
 
 function inPage(e){
-	var name;
-	let flag = false;
-	if(e.params.message){
-		flag = true;
-	}
-	if(flag){
-		let message = e.params.message;
-		let item;
-		if(message&&message.indexOf("item")>=0){
-			item = JSON.parse(message).upIndex;
-			name = JSON.parse(e.params.message).item;
-		}else{
-			//name = e.params.message;
-			item = message;
-		}
-		if(item&&item.length>6){
-			item = item.substring(0,5)+"...";
-		}
-		let total = name ? item+">"+ name : item;
-		console.log(item,name,total)
-		$("#title").text(total);
-	}else{
-		console.log(e.routes[1].name)
-		$("#title").text(e.routes[1].name);
-	}
-	 
+	
 }
 
 

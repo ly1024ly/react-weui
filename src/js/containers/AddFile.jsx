@@ -24,6 +24,7 @@ class AddFile extends Component{
 		super(props,context);
 		this.state={
 			val:"",
+			user:{},
 			book:''
 		}
 		this.saveValue = this.saveValue.bind(this);
@@ -35,10 +36,20 @@ class AddFile extends Component{
 		})
 	}
 	componentDidMount(){
-		
+		document.title = '搜索添加';
+		if(sessionStorage.user){
+      this.setState({
+          user:JSON.parse(sessionStorage.user)
+      })
+    }else{
+        let url = window.location.href;
+        url = url.split("view")[0]+"view/prop.html";
+        //window.location.href=url;
+    }
+    this.props.fileAction.file("yang6");
+		this.props.fileAction.all("yang6");
 	}
 	addMenu(res){
-		console.log(res)
 		this.setState({
 			book:res.bookname
 		});
@@ -50,17 +61,50 @@ class AddFile extends Component{
 		this.props.fileAction.addMenu(obj);
 	}
 	checkValue(){
-		this.props.fileAction.list(this.state.val)
+		if(this.state.val===""){
+
+			this.props.fileAction.all("yang6")
+		}else{
+			this.props.fileAction.list(this.state.val)
+		}
 	}
 	render(){
 		let a = "hhh";
 		let addFile;
+		let list;
 		if(this.props.addfile.success&&this.props.addfile.success.result=="success"){
 			$.toast("添加成功");
+			this.props.addfile.success = {};
+		}else if(this.props.addfile.success&&this.props.addfile.success.result=="fail"){
+			$.toast(this.props.addfile.success.message)
+			this.props.addfile.success = {}
 		}
-		if(this.props.addfile.add.result&&this.props.addfile.add.result=="success"){
+		if(this.props.addfile.add.result=="success"&&this.props.addfile.add.result=="success"){
 			addFile = this.props.addfile.add.message.map(function(item,index){
+				let i;
+				this.props.addfile.added.forEach(function(val){
+					if(item.id==val){
+						i = val
+					}
+				})
+				let show = i ? "none" : "block";
 			 	return (
+			 		<li key={index}>
+			 			<div className="cbox" key={index} >
+						    <a className="weui-cell weui-cell_access"  key={index} >
+						        <div className="weui-cell__bd">
+						    		<p>{item.bookname}</p>
+						        </div>
+						       <i className="iconfont icon-add" style={{display:show}} onClick={this.addMenu.bind(this,item)}>&#xe601;</i>
+						    </a>
+						</div>
+					</li>
+			 	)
+			},this)
+		}
+		if(this.props.addfile.list&&this.props.addfile.list.result=="success"){
+			list = this.props.addfile.list.message.map(function(item,index){
+				return (
 			 		<li key={index}>
 			 			<div className="cbox" key={index} >
 						    <a className="weui-cell weui-cell_access"  key={index} >
@@ -73,6 +117,7 @@ class AddFile extends Component{
 					</li>
 			 	)
 			},this)
+			
 		}
 		return(
 			<div>
@@ -100,10 +145,38 @@ class AddFile extends Component{
 					<div>
 						<span className="warn">提示：本页仅显示可公开文档；对于保密文档，请联系设备商获取二维码后扫码添加.</span>
 						<ul>
-						{addFile}
+						{list ? list : addFile}
 						</ul>
 					</div>
 				</div>
+				<footer>
+					<div className="weui-tabbar">
+				    	<Link to="" className="weui-tabbar__item weui-bar__item--on" onClick={this.fileSearch}>
+				      		<div className="weui-tabbar__icon">
+				        		<i className="iconfont icon-title" style={{color:"orange"}} >&#xe656;</i>
+				     		</div>
+				      		<p className="weui-tabbar__label">帮助文档</p>
+				    	</Link>
+				    	<Link to="collect" className="weui-tabbar__item" onClick={this.collect}>
+				      		<div className="weui-tabbar__icon">
+				        		<i className="iconfont icon-collect" >&#xe616;</i>
+				      		</div>
+				      		<p className="weui-tabbar__label">我的收藏</p>
+				    	</Link>
+					    <Link className="weui-tabbar__item" onClick={this.qrcode}>
+					      <div className="weui-tabbar__icon">
+					        <i className="iconfont icon-help" >&#xe60b;</i>
+					      </div>
+					      <p className="weui-tabbar__label">扫码求助</p>
+					    </Link>
+					    <a href="javascript:;" className="weui-tabbar__item">
+					      <div className="weui-tabbar__icon">
+					        <i className="iconfont icon-r" style={{color:"#ddd"}}>&#xe6fd;</i>
+					      </div>
+					      <p className="weui-tabbar__label">用户社区</p>
+					    </a>
+				  	</div>
+				</footer>
 			</div>
 		)
 	}

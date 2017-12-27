@@ -37,6 +37,7 @@ class Qrcode extends Component {
         this.scanCode = this.scanCode.bind(this)
     }
     componentDidMount(){
+        document.title = '扫码求助';
         var that = this;
         $(".content").css("paddingBottom","50px");
         $(".popup").css("display","none");
@@ -120,12 +121,10 @@ class Qrcode extends Component {
                 $(".button2").removeClass("noclick");
                 if(this.state.page>1){
                     this.props.qrAction.findErr(this.state.val,this.state.page-1);
-
                     this.setState({
                         page:page-1
                     })
                 }else{
-                    
                     $(".button1").addClass("noclick");
                 }
             }else if(res=="next"){

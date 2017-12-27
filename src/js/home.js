@@ -26,7 +26,11 @@ var user = getUserInfo();
 		if ("more" in user) {
 
 		} else {
-			window.location.href=aurl;
+			//window.location.href=aurl;
+			alert("md")
+			var url1 = window.location.href;
+			var url2 = url1.substring(0, url1.indexOf("home.html")) + "view/index.html";
+			window.location.href=url2;
 		}
 
 	}

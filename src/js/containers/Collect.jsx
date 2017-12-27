@@ -37,6 +37,7 @@ class Collect extends Component {
 		this.qrcode = this.qrcode.bind(this);
 	}
 	componentDidMount(){
+		document.title = '我的收藏';
 		if(JSON.stringify(this.props.collect.chart)=="{}"){
 			this.props.collectAction.getCollect("rxt123");
 			//this.props.collectAction.getCollect(this.state.user.username);

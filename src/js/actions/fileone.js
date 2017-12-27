@@ -29,40 +29,37 @@ export function search(data,page){
       })
   }
 }
-// export function twoMenu(data){
-//   console.log(data);
-// 	let json = {result:'success', index:0, message:{ProductName:["通用","NcEditor V12","NK300CX","朗达","NK105","NK105/RC300/RC100","维智松下安川台达","一体机","NcEditor"]}};
-//   let json1 = {result:'success', index:1, message:{ProductName:["维智"]}}
-// 	return dispatch => {
-//     if(data=="驱动器错误码"){
-//       dispatch({type:"TWO_MENU",two:json1})
-//     }else{
-// 		  dispatch({type:"TWO_MENU",two:json})
-//     }
-// 	}
-// }
 
+// export function twoMenu(data){
+//   const turl = baseUrl + "search/secondcons?q=" + data;
+//     return dispatch =>{
+//         return fetch(turl)
+//             .then(res =>res.json())
+//             .then(json =>{
+//               if(json.result == "success"){
+//                 if(data=="驱动器错误码"){
+//                   let json1 = json;
+//                   json1.index = 1;
+//                   dispatch({type:"TWO_MENU",two:json1})
+//                 }else{
+//                   let json2 = json;
+//                   json2.index = 0;
+//                   dispatch({type:"TWO_MENU",two:json2})
+//                 }
+//               }
+//             })
+//     }
+// }
 export function twoMenu(data){
-  const turl = baseUrl + "search/secondcons?q=" + data;
+  const test = "https://nccloud.weihong.com.cn/nccloudOLhelp/search/getCatalogIndex?bookid="+data.id+"&bookname="+data.bookname;
     return dispatch =>{
-        return fetch(turl)
+        return fetch(test)
             .then(res =>res.json())
             .then(json =>{
-              if(json.result == "success"){
-                if(data=="驱动器错误码"){
-                  let json1 = json;
-                  json1.index = 1;
-                  dispatch({type:"TWO_MENU",two:json1})
-                }else{
-                  let json2 = json;
-                  json2.index = 0;
-                  dispatch({type:"TWO_MENU",two:json2})
-                }
-              }
+              dispatch({type:"TWO_MENU",two:json})
             })
     }
 }
-
 
 //得到点击搜寻的当前页面
 export function current(index){

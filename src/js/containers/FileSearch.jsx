@@ -36,6 +36,7 @@ class FileSearch extends Component {
 			pre:1,
 			param:false,
 			user:{},
+			back:0,
 			class:"click",
 			display:"none",
 			add:"添加新产品文档"
@@ -73,17 +74,18 @@ class FileSearch extends Component {
 			}
 		}else{
 			let url = window.location.href;
+			console.log("kkk")
 			url = url.split("view")[0]+"view/prop.html";
 			//window.location.href=url;
 		}
 	}
 	forceUpdate(res){
-	console.log("forceupdate$$$$$$$$$$$$$$$$$$$$$$")
-		console.log(res)
+	
 	}
 	clearProp(){
 		$(".hint").css("display","none")
 	}
+	//下拉框提示
 	propSearch(res){
 		console.log("search")
 		$(".hint").css("display",'block');
@@ -93,19 +95,21 @@ class FileSearch extends Component {
 		$(".hint").css("display",'none');
 		//this.props.fileSearchAction.search(this.state.val,1);
 	}
+	//跳到我的收藏
 	collect(){
 		this.context.router.push("collect");
 	}
+	//跳到扫码求助
 	qrcode(){
 		this.context.router.push("qrcode");
 	}
 	componentDidMount(){
 		document.documentElement.scrollTop = 0;
 		//分页点击事
-		console.log(this.props.params)
+		document.title = '帮助文档';
+		//初始化
 		this.props.fileSearchAction.wechart();
 		let page;
-		console.log(this.props.location.query)
 		if(this.props.location.query&&this.props.location.query.name){
 			console.log("this.props.location.query")
 			this.setState({
@@ -125,13 +129,16 @@ class FileSearch extends Component {
 			this.props.fileSearchAction.search(this.state.val,1)
 		}else{
 			let user = this.state.user;
-			this.props.fileSearchAction.file("ly1024","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiMTgzMjY4ODI2NTgiLCJleHAiOjE1MTQ5Mzc2MDAsImlhdCI6MTUxMjM2OTk2N30.JcED4m2wV75crDrT-pp5O56tn9N4tC12GanCNABnzb8");
+			this.props.fileSearchAction.file("yang6");
 			
 		}
 		
 	}
 	componentDidUpdate(){
 		$(window).scrollTop(0);
+		if(this.props.fileSearch.del&&this.props.fileSearch.del.result=="success"){
+			window.location.reload();
+		}
 		
 	}
 	componentWillUpdate(){
@@ -171,7 +178,7 @@ class FileSearch extends Component {
 	}
 	componentWillReceiveProps(nextProps) {
 	
-  	}
+  }
   	
 	saveValue(e){
 		$(".hint").css("display",'block');
@@ -192,7 +199,7 @@ class FileSearch extends Component {
 		this.setState({
 			param:false
 		})
-		this.props.fileSearchAction.file();
+		this.props.fileSearchAction.file("yang6");
 	}
 	selectChange(e){
 		if(e.target.value=="扫码添加"){
@@ -232,8 +239,15 @@ class FileSearch extends Component {
 	componentWillUnmount(){
 		
 	}
+	touchEvent(index,e){
+		this.setState({
+			back:index
+		})
+	}
 	delete(res){
+		console.log(res)
 
+		this.props.fileSearchAction.delfile(res.bookid,"yang6",res._id);
 	}
 	pageChange(res){
 		let page = this.state.page
@@ -275,8 +289,6 @@ class FileSearch extends Component {
 	}
     render() {
     	let list;
-    	console.log("************************")
-    	console.log(this.props.fileSearch)
     	let wechat = this.props.fileSearch.wechat;
     	if(wechat){
     		 wx.config({
@@ -304,8 +316,7 @@ class FileSearch extends Component {
     	let display = this.props.fileSearch.chart&&this.props.fileSearch.chart.message.Maxpage>0||this.props.fileSearch.save ? "block" : "none";
     	//一级目录的结果
     	let	data = this.props.fileSearch.data;
-    	console.log(data)
- 		//查询的结果
+ 			//查询的结果
     	let chart;
     	if(this.props.fileSearch.chart){
     		chart = this.props.fileSearch.chart;
@@ -327,30 +338,42 @@ class FileSearch extends Component {
 		if(chart&&chart.result=="success"){
 			max = chart.message.Maxpage;
 		}
-
 		//一级目录
-		let menu;
+		let menu = [];
 		if(data&&data.result=="success"&&data.message.length>0){		
 			menu = data.message.map(function(item,index){	
+				let book = {};
+				book.bookname = item.bookname;
+				book.id=item.id;
+				book._id = item._id;
+				let width = this.state.back===index ? "" : "back";
+				let delshow = this.state.back===index ? "visible" : "hidden";
+
 			 	return (
-			 		<li key={index}>
-			 			<div className="cbox" key={index} >
-						    <Link className="weui-cell weui-cell_access" activeClassName="active" key={index} to={`/fileone/${item.firtcontent}`}>
+			 		<li key={index} >
+			 			<div className={"cbox "+width} key={index} onTouchMove={this.touchEvent.bind(this,index)}>
+						    <Link className={"weui-cell weui-cell_access "+width} activeClassName="active" key={index} to={`/fileone/${JSON.stringify(book)}`}>
 						        <div className="weui-cell__bd">
 						    		<p>{item.bookname}</p>
 						        </div>
 						    	<div className="weui-cell__ft">
 						    	</div>
 						    </Link>
-						    <div onClick={this.delete.bind(this,item)} className="delete">
+						    <div onClick={this.delete.bind(this,item)} style={{visibility:delshow}} className="delete" >
 							    删除
 							</div>
 						</div>
 					</li>
 			 	)
 			},this)
-			menu.push(
-				<li key="99">
+	
+		}else if(data&&data.result=="fail"){
+			menu =([<div key="0">{data.message}</div>]);
+		}else if(data&&data.message&&data.message.length==0){
+			menu = ([<div key="0">没有匹配到相关信息！</div>]);
+		}
+		menu.push(
+				<li key="99000">
 					 <a className="weui-cell weui-cell_access" style={{width:'88%',position:'relative'}}> 
 						<select value={this.state.add} onChange={this.selectChange.bind(this)}>
 							<option style={{display:"none"}}>添加新产品文档</option>
@@ -361,16 +384,10 @@ class FileSearch extends Component {
 					</a>
 				</li>
 			)
-		}else if(data&&data.result=="fail"){
-			menu =(<div>{data.message}</div>);
-		}else if(data&&data.message&&data.message.length==0){
-			menu = (<div>没有匹配到相关信息！</div>);
-		}
 		//搜索本页
 		let child;
 		if(chart&&chart.result=="success"&&chart.message&&chart.message.objArray&&chart.message.objArray.length>0){
-			child = chart.message.objArray.map(function(item,index){
-				
+			child = chart.message.objArray.map(function(item,index){			
 				return (
 					<div className="weui-panel weui-panel_access" key={index}>
 						<div className="weui-panel__bd">

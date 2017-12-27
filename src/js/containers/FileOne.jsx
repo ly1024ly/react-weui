@@ -38,15 +38,72 @@ class FileOne extends Component {
 			})
 		}else{
 			let url = window.location.href;
-			url = url.split("view")[0]+"view/prop.html";
+			console.log("bug")
+			//url = url.split("view")[0]+"view/prop.html";
 			console.log(url);
 			//window.location.href=url;
 		}
 	}
+
 	componentDidMount(){
-		const params = this.props.params;
-		console.log(this.props.params);
-		this.props.fileOneAction.twoMenu(params.message)
+		const params = JSON.parse(this.props.params.message);
+		document.title = params.bookname;
+		console.log(JSON.parse(this.props.params.message));
+		this.props.fileOneAction.twoMenu(params);	
+		var yy = window.frames['myframe'].document;
+		console.log(window.document.getElementById('myframe').contentWindow.top)
+		var myframe = document.getElementById('myframe');
+		var doc = myframe.contentWindow;
+		myframe.onload = function(e){
+			console.log($(this));
+			console.log($("#myframe")) 
+			doc.addEventListener('click',function(e){
+				console.log(e)
+				let topicid;
+				let titles;
+				e.path.forEach(function(value){
+					if(value&&value.tagName=="BODY"){
+						topicid = value.id;
+					}
+					if(value&&value.tagName=="HTML"){
+						value.childNodes.forEach(function(item){
+							if(item&&item.tagName=="BODY"){
+								item.childNodes.forEach(function(m){
+									if(m&&m.tagName=="H1"){
+										titles = m.innerText;
+									}
+								})
+							}
+						})
+					}
+				});
+				e.cancelBubble = true;
+				e.preventDefault();
+				let hrefs;
+				let title;
+				if(e.target.children[0]){
+					hrefs = e.target.children[0].href;
+					title = e.target.children[0].innerText;
+				}else{
+					hrefs = e.target.href;
+					title = e.target.innerText;
+				}
+				document.title = title;
+				if(hrefs!==""){
+					let data = {
+						href:hrefs,
+						id:topicid,
+						_id:params._id,
+						title:titles
+					}
+					let path = {
+						pathname:'iframe',
+						query:data
+					}
+					hashHistory.push(path);
+				}
+			},false)  
+		} 	
 	}
 	collect(){
 		console.log("go")
@@ -55,6 +112,7 @@ class FileOne extends Component {
 	qrcode(){
 		this.context.router.push("qrcode")
 	}
+	
 	checkValue(e){
 		e.preventDefault();
 		var select = e.target.innerHTML;
@@ -75,8 +133,7 @@ class FileOne extends Component {
 		}
 		
 	}
-	saveValue(e){
-		
+	saveValue(e){	
 		this.setState({
 			val:e.target.value
 		})
@@ -84,7 +141,7 @@ class FileOne extends Component {
 	render(){
 		const result = this.props.fileone.two;
 		//搜索结果
-		console.log(this.props.fileone)
+		console.log(document.body.clientHeight)
 		let menu;
 		let all;
 		let haulf;
@@ -103,7 +160,6 @@ class FileOne extends Component {
 				obj.item = encodeURIComponent(item);
 				obj.upIndex = this.props.params.message;
 				obj.result = result.index;
-				console.log(obj)
 				return (
 			 		<li key={index}>
 					  <Link className="weui-cell weui-cell_access" activeClassName="active" key={index} to={`/filetwo/${JSON.stringify(obj)}`}>
@@ -138,10 +194,8 @@ class FileOne extends Component {
 							
 						</div>
 					</div>
-					<div className="weui-cells">
-						<ul id="itemContainer">
-							{menu}
-						</ul>
+					<div style={{height:document.body.clientHeight+"px"}} >
+						<iframe id="myframe" name="myframe" style={{height:window.screen.height+"px",paddingBottom:"70px"}} src={result&&result.result=="success" ? result.message : ""}></iframe>
 					</div>
 				</div>
 				<footer>

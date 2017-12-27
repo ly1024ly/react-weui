@@ -53,6 +53,7 @@ export function wechat(){
 }
 //收藏
 export function collect(obj){
+	console.log(obj)
 	const curl = baseUrl + "search/storeup?";
 	return dispatch => {
 		return fetch(curl,{
@@ -124,7 +125,8 @@ export function clear(){
 //获取关键字
 export function keyword(key){
 	console.log(key)
-	const kurl = baseUrl + "search/getkeyworlds?topicid="+key;
+	//const kurl = baseUrl + "search/getkeyworlds?topicid="+key;
+	const kurl = "https://nccloud.weihong.com.cn/nccloudOLhelp/search/getkeyworlds?topicid="+key;
 	return dispatch => {
 		return fetch(kurl)
 			.then(res =>res.json())

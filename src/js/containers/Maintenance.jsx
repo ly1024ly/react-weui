@@ -53,6 +53,7 @@ class Maintenance extends Component{
 		this.props.maintenance.submit={};
 	}
 	componentDidMount(){
+    document.title = '维修申请';
 		$(window).scrollTop(0);
 		this.setState({
 			hash:window.location.hash

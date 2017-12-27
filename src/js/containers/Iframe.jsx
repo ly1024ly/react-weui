@@ -26,7 +26,8 @@ class Iframe extends Component {
             collect: {},
             user:{},
             height:'',
-            docHeight:''
+            docHeight:'',
+            contentType:''
         }
         const { store } = this.context;
         this.like = this.like.bind(this);
@@ -53,7 +54,33 @@ class Iframe extends Component {
     }
     componentDidMount() {
         //跨域
-      
+        let contentType;
+        var that = this;
+         let collect = {};
+         //collect.username = this.state.user.username;
+        collect.username = "rxt123";
+        collect.topicid = this.props.location.query.id||this.props.location.query.topicid;
+        collect.title = this.props.location.query.title;
+        collect.topicURL = this.props.location.query.href||this.props.location.query.url;
+        let framecont = document.getElementById("frameContent");
+        framecont.onload = function(e){
+            e.path.forEach(function(value){
+                if(value&&value.tagName=="IFRAME"){
+                    let ht = value.contentWindow.document.children[0].children;
+                    for(var h of ht){
+                    console.log(h)
+                        if(h&&h.tagName=="HEAD"){
+                            h.childNodes.forEach(function(e){
+                               if(e.name == "ContentType"){
+                                    contentType = e.content;
+                                    collect.ContentType = e.content;
+                               }
+                            })
+                        }
+                    }
+                }
+            },this)
+        }
         $(window).scrollTop(0);
         this.setState({
             height:window.screen.height
@@ -63,27 +90,21 @@ class Iframe extends Component {
         $(".ss").css("height",height) 
         let user = this.state.user;
         let obj = {};
-        obj.username = this.state.user.username;
-        //obj.username="rxt123";
-        obj.topicid = this.props.location.query.topicid;
+        //obj.username = this.state.user.username;
+        console.log(this.props.location.query.href);
+        obj.username="rxt123";
+        obj.topicid = this.props.location.query.id||this.props.location.query.topicid;
         obj.title = this.props.location.query.title;
-        obj.filename = this.props.location.query.filename;
-        let collect = {};
-        collect.username = this.state.user.username;
-        //collect.username = "rxt123";
-        collect.topicid = this.props.location.query.topicid;
-        collect.title = this.props.location.query.title;
-        collect.filename = this.props.location.query.filename;
-        collect.ContentType = this.props.location.query.ContentType;
+
         this.setState({
             like: obj,
-            collect: collect
-        })
+            collect:collect
+        });
         let o = {};
-        o.username = user.username;
-        //o.username = "rxt123";
-        o.topicid = this.props.location.query.topicid;
-        this.props.iframeAction.keyword(this.props.location.query.topicid);
+        //o.username = user.username;
+        o.username = "rxt123";
+        o.topicid = this.props.location.query.id;
+        this.props.iframeAction.keyword(this.props.location.query.id);
         this.props.iframeAction.saveLike(o);
         this.props.iframeAction.wechat();
         document.documentElement.scrollTop = 0;
@@ -96,7 +117,7 @@ class Iframe extends Component {
         this.props.iframeAction.clear();
     }
     collect(res) {
-        let collect = this.state.collect;
+       let collect = this.state.collect;
         collect.status = res;
         this.props.iframeAction.collect(collect);
     }
@@ -138,7 +159,7 @@ class Iframe extends Component {
             collect = this.props.iframe.store;
         }
         let wechat = this.props.iframe.wechat;
-        let url = this.props.location.query.html || this.props.location.query.url;
+        let url = this.props.location.query.href || this.props.location.query.url;
         //获得关键字
         let keyword;
         if(this.props.iframe.key&&this.props.iframe.key.result=="success"&&this.props.iframe.key.message.length>0){
@@ -213,20 +234,20 @@ class Iframe extends Component {
             });
         }
         //分享
-        let heights = this.state.height-(this.state.height-window.innerHeight)- 60;
+        let heights = window.innerHeight- 60;
         console.log(heights)
         let share = false;
         let display = keyword ? "block" : "none";
         return ( 
       	  <div id="iframe">
             <div id="shareit" onClick={this.hideFlow}>
-                <img className="arrow" src= {require('../../img/share-it.png')} />
+                <img className="arrow" src= {firstGuid} />
                 <div  id="follow">
                     点击右上角按钮，开始分享
                 </div>
             </div>
             <div style={{overflow:'auto',height:heights+"px"}} className="ss">
-			 <iframe style={{height:document.body.clientHeight+"px"}} src={this.props.location.query.html||this.props.location.query.url}></iframe>
+			 <iframe id="frameContent" style={{height:document.body.clientHeight+"px"}} src={this.props.location.query.href||this.props.location.query.url}></iframe>
             </div>
             <div className="key" style={{display:display}}>
                 <ul>

@@ -16,6 +16,7 @@ module.exports = {
   output:{
     path:path.resolve(__dirname,"assets"),
     publicPath:'../',
+    //publicPath:'https://nccloud.weihong.com.cn/nchelp/assets/',
     filename:'js/[name].js',
     chunkFilename:'js/[id].chunk.js'
   },

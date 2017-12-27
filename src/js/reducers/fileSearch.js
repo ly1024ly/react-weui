@@ -10,13 +10,6 @@ export default function fileSearch(state = initialState,action){
   switch(action.type) {
     case actionTypes.FIND_SEARCH:
       chart = JSON.parse(JSON.stringify(action))
-      // return  {
-      //           ...state,
-      //           current:current,
-      //           auto:auto,
-      //           chart:action
-      //         }
-
       return Object.assign({},state,current,auto,chart,wechat)
     case actionTypes.CURRENT_PAGE:
       return Object.assign({},action,wechat)
@@ -44,6 +37,8 @@ export default function fileSearch(state = initialState,action){
     case actionTypes.MESSAGE:
       message = JSON.parse(JSON.stringify(action))
       return Object.assign({},state,current,message,chart,wechat)
+    case actionTypes.DELFILE:
+      return Object.assign({},state,chart,wechat,action)
     default:
       return state
   }

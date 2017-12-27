@@ -54,6 +54,7 @@ window.onload = function() {
         localStorage.firstUse = true;
     }
     $(".content").load(decodeURIComponent(user.shareUrl), function() {
+        alert(user.shareUrl)
         $(".content").find("ul li").css({
             "listStyle": "none",
             "padding": "10px 0"

@@ -53,16 +53,14 @@ export function page(pre){
 //   }
 // }
 
-export function file(name,token){
+export function file(name){
 
-  const ourl = baseUrl + "user/titlelist/?username="+name+"&token="+token;
-  const text = "http://172.16.11.71:3008/search/addCatalog?"
+  //const ourl = baseUrl + "user/titlelist/?username="+name+"&token="+token;
+  const text = "https://nccloud.weihong.com.cn/nccloudOLhelp/search/myCatalog?username=" + name;
   return dispatch => {
     return fetch(text)
       .then(res => res.json())
       .then(json => {
-        console.log("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
-        console.log(json)
         dispatch({type:'CURRENT_PAGE',data:json})
       })
         
@@ -138,5 +136,18 @@ export function wechart(){
         })
       }
     })
+  }
+}
+
+export function delfile(id,name,tag){
+  const text = "https://nccloud.weihong.com.cn/nccloudOLhelp/search/deleteCatalog?bookid="+id+"&username=" +name;
+  return (dispatch,getState) => {
+    return fetch(text)
+      .then(res => res.json())
+      .then(json => {
+        
+        dispatch({type:'DELFILE',del:json})
+        
+      })
   }
 }
