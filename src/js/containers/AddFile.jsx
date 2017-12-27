@@ -68,6 +68,17 @@ class AddFile extends Component{
 			this.props.fileAction.list(this.state.val)
 		}
 	}
+	onKeyup =(e) => {
+		e.keyCode == 13 && this.handler()
+	}
+	handler = (e) =>{
+		if(this.state.val===""){
+
+			this.props.fileAction.all("yang6")
+		}else{
+			this.props.fileAction.list(this.state.val)
+		}	
+	}
 	render(){
 		let a = "hhh";
 		let addFile;
@@ -80,27 +91,31 @@ class AddFile extends Component{
 			this.props.addfile.success = {}
 		}
 		if(this.props.addfile.add.result=="success"&&this.props.addfile.add.result=="success"){
-			addFile = this.props.addfile.add.message.map(function(item,index){
-				let i;
-				this.props.addfile.added.forEach(function(val){
-					if(item.id==val){
-						i = val
-					}
-				})
-				let show = i ? "none" : "block";
-			 	return (
-			 		<li key={index}>
-			 			<div className="cbox" key={index} >
-						    <a className="weui-cell weui-cell_access"  key={index} >
-						        <div className="weui-cell__bd">
-						    		<p>{item.bookname}</p>
-						        </div>
-						       <i className="iconfont icon-add" style={{display:show}} onClick={this.addMenu.bind(this,item)}>&#xe601;</i>
-						    </a>
-						</div>
-					</li>
-			 	)
-			},this)
+			if(this.props.addfile.add.message.length>0){
+				addFile = this.props.addfile.add.message.map(function(item,index){
+					let i;
+					this.props.addfile.added.forEach(function(val){
+						if(item.id==val){
+							i = val
+						}
+					})
+					let show = i ? "none" : "block";
+				 	return (
+				 		<li key={index}>
+				 			<div className="cbox" key={index} >
+							    <a className="weui-cell weui-cell_access"  key={index} >
+							        <div className="weui-cell__bd">
+							    		<p>{item.bookname}</p>
+							        </div>
+							       <i className="iconfont icon-add" style={{display:show}} onClick={this.addMenu.bind(this,item)}>&#xe601;</i>
+							    </a>
+							</div>
+						</li>
+				 	)
+				},this)
+			}else{
+				addFile = <p style={{textAlign:'center',padding:'10px',color:'orange'}}>没有相关书籍。</p>
+			}
 		}
 		if(this.props.addfile.list&&this.props.addfile.list.result=="success"){
 			list = this.props.addfile.list.message.map(function(item,index){
@@ -129,7 +144,7 @@ class AddFile extends Component{
 					  		 value={this.state.val}
 					  		 className="search"  
 					  		 onChange={this.saveValue}
-					  		 
+					  		 onKeyUp={this.onKeyup}
 					  		 />
 					  		 <div className="hint" id="hint">
 					  		 	<ul >
@@ -139,7 +154,8 @@ class AddFile extends Component{
 						</div>
 						<div className="search-btn">
 							<label className="btn" 
-							onClick={this.checkValue} >搜索产品文档</label>
+							onClick={this.checkValue} 
+							>搜索产品文档</label>
 						</div>
 					</div>
 					<div>
