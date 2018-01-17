@@ -51,32 +51,11 @@ class FileOne extends Component {
 		console.log(JSON.parse(this.props.params.message));
 		this.props.fileOneAction.twoMenu(params);	
 		var yy = window.frames['myframe'].document;
-		console.log(window.document.getElementById('myframe').contentWindow.top)
 		var myframe = document.getElementById('myframe');
 		var doc = myframe.contentWindow;
 		myframe.onload = function(e){
-			console.log($(this));
-			console.log($("#myframe")) 
 			doc.addEventListener('click',function(e){
-				console.log(e)
-				let topicid;
-				let titles;
-				e.path.forEach(function(value){
-					if(value&&value.tagName=="BODY"){
-						topicid = value.id;
-					}
-					if(value&&value.tagName=="HTML"){
-						value.childNodes.forEach(function(item){
-							if(item&&item.tagName=="BODY"){
-								item.childNodes.forEach(function(m){
-									if(m&&m.tagName=="H1"){
-										titles = m.innerText;
-									}
-								})
-							}
-						})
-					}
-				});
+				let topicid = myframe.contentWindow.document.body.getAttribute("id");
 				e.cancelBubble = true;
 				e.preventDefault();
 				let hrefs;
@@ -89,18 +68,21 @@ class FileOne extends Component {
 					title = e.target.innerText;
 				}
 				document.title = title;
+				console.log("kkkkkkkkkkkkkkkkkkk");
+				console.log(topicid)
 				if(hrefs!==""){
 					let data = {
 						href:hrefs,
 						id:topicid,
-						_id:params._id,
-						title:titles
+						_id:params._id
 					}
 					let path = {
 						pathname:'iframe',
 						query:data
 					}
-					hashHistory.push(path);
+					if(hrefs){
+						hashHistory.push(path);
+					}
 				}
 			},false)  
 		} 	

@@ -60,7 +60,8 @@ export function getCollect(para){
 // }
 //删除搜藏
 export function deCollect(obj,obj1){
-	console.log("T&")
+	console.log("T&");
+  console.log(obj,obj1)
 	const curl = baseUrl + "search/storeup?";
 	return dispatch => {
 		return fetch(curl,{
@@ -156,3 +157,22 @@ export function inputVal(data){
 	}
 }
 
+export function promtMessage(data){
+  let str = encodeURIComponent(data);
+  let url = baseUrl + 'search/getTitleAndHtmlUrl?q=' + str +'&page=1&type=';
+  return function(dispatch,getState){
+    return fetch(url)
+      .then(res => res.json())
+      .then(json => {
+        let arr = [];   
+        console.log(json)
+        if(json.result=="success"&&json.message.objArray){
+          let objArray = json.message.objArray;
+          for(var i=0;i<objArray.length;i++){
+            arr.push(objArray[i].title)
+          }
+        } 
+        dispatch({type:'POPMESSAGE',message:arr})
+      })
+  }
+}

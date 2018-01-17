@@ -10,7 +10,6 @@ const initialState = {
 	max:{},
 	save:{},
 	page:{},
-	
 }
 let collect = {}
 let del = {}
@@ -68,35 +67,40 @@ export default function collect(state = initialState,action){
 				...state,
 				chart:action.chart
 			}
-   		case actionTypes.VAL_COLLECT:
-   			val = JSON.parse(JSON.stringify(action))
-   			state.val = action.val;
-   			return {
-   				...state,
-   				val:action.val
-   			}
-	    case actionTypes.PAGE:
-	    	state.page = action.page
-	    	return {
-	    		...state,
-	    		page:action.page
-	    	}
-	    case actionTypes.SAVE_COLLECT:
-	    	save = JSON.parse(JSON.stringify(action))
-	    	state.save = action.save;
-	    	return {
-	    		...state,
-	    		save:action.save
-	    	}
-      	case actionTypes.INPUT_VALUE:
-      		state.collect = {}
-      		let val = action.val;
-      		if(val!==""){
-      			return {
-	      			...state,
-	      			val:action.val
-      			}	
-      		}
+ 		case actionTypes.VAL_COLLECT:
+ 			val = JSON.parse(JSON.stringify(action))
+ 			state.val = action.val;
+ 			return {
+ 				...state,
+ 				val:action.val
+ 			}
+    case actionTypes.PAGE:
+    	state.page = action.page
+    	return {
+    		...state,
+    		page:action.page
+    	}
+    case actionTypes.SAVE_COLLECT:
+    	save = JSON.parse(JSON.stringify(action))
+    	state.save = action.save;
+    	return {
+    		...state,
+    		save:action.save
+    	}
+    case actionTypes.INPUT_VALUE:
+    	state.collect = {}
+    	let val = action.val;
+    	if(val!==""){
+  			return {
+    			...state,
+    			val:action.val
+  			}	
+  		}
+    case actionTypes.POPMESSAGE:
+      return {
+        ...state,
+        message:action.message
+      }
 		default:
 			return state
 	}

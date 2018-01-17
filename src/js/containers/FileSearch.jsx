@@ -74,7 +74,6 @@ class FileSearch extends Component {
 			}
 		}else{
 			let url = window.location.href;
-			console.log("kkk")
 			url = url.split("view")[0]+"view/prop.html";
 			//window.location.href=url;
 		}
@@ -130,7 +129,7 @@ class FileSearch extends Component {
 		}else{
 			let user = this.state.user;
 			this.props.fileSearchAction.file("yang6");
-			
+			//this.props.fileSearchAction.file(this.state.user.username);
 		}
 		
 	}
@@ -150,6 +149,7 @@ class FileSearch extends Component {
 		if(this.props.location.query&&this.props.location.query.name){
 			this.props.location.query = {}
 		}
+		$(".cd-pagination li").removeClass("noclick");
 		var select = e.target.innerHTML;
 		if(select=="搜全站"){
 			this.setState({
@@ -200,18 +200,18 @@ class FileSearch extends Component {
 			param:false
 		})
 		this.props.fileSearchAction.file("yang6");
+		//this.props.fileSearchAction.file(this.state.user.username);
 	}
 	selectChange(e){
 		if(e.target.value=="扫码添加"){
 			var that = this;
-	        wx.scanQRCode({
-	            needResult : 1, 
-	            scanType : [ "qrCode"], 
-	            success : function(res) {
-	            	var result = res.resultStr;
-	            	alert("success")
-	            }
-			})
+        wx.scanQRCode({
+            needResult : 1, 
+            scanType : [ "qrCode"], 
+            success : function(res) {
+            	var result = res.resultStr;
+            }
+				})
 		}else{
 			this.context.router.push("addfile");
 		}
@@ -250,6 +250,7 @@ class FileSearch extends Component {
 		this.props.fileSearchAction.delfile(res.bookid,"yang6",res._id);
 	}
 	pageChange(res){
+		$(".cd-pagination li").removeClass("noclick");
 		let page = this.state.page
 		if(res=="pre"){
 			if(this.state.page-1>0){
@@ -263,6 +264,7 @@ class FileSearch extends Component {
 				this.setState({
 					page:1
 				})
+				$(".button1").addClass("noclick");
 				$(".s").addClass("noclick");
 			}
 			
@@ -281,9 +283,14 @@ class FileSearch extends Component {
 		}else{
 			this.setState({
 				page:res
-			})
-			$(".s").removeClass("noclick");
-			$(".e").removeClass("noclick");
+			});
+			if(res==1){
+				$(".s").addClass("noclick");
+				$(".button1").addClass("noclick");
+			}else{
+				$(".e").addClass("noclick");
+				$(".button2").addClass("noclick");
+			}
 			this.props.fileSearchAction.search(this.state.val,res)
 		}
 	}
@@ -370,7 +377,7 @@ class FileSearch extends Component {
 		}else if(data&&data.result=="fail"){
 			menu =([<div key="0">{data.message}</div>]);
 		}else if(data&&data.message&&data.message.length==0){
-			menu = ([<div key="0">没有匹配到相关信息！</div>]);
+			menu = ([<div key="0"></div>]);
 		}
 		menu.push(
 				<li key="99000">
@@ -380,7 +387,7 @@ class FileSearch extends Component {
 							<option value="搜索添加">搜索添加</option>
 							<option value="扫码添加">扫码添加</option>
 						</select>
-						<i className="iconfont icon-add">&#xe601;</i>
+						<i className="iconfont icon-add">&#xe708;</i>
 					</a>
 				</li>
 			)

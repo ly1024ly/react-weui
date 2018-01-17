@@ -8,7 +8,7 @@ let luad = false;
 let store = false;
 export function like(obj){
 	const url = baseUrl + "search/laud?";
-	return dispatch => {
+	return (dispatch,getState) => {
 		return fetch(url, {
 			method: 'POST',
 			headers:{
@@ -20,7 +20,8 @@ export function like(obj){
 			if(res.ok) {
 				res.json().then(res => {
 					if(res.result=="success"){
-						dispatch({type:'LUAD',luad:true})
+						let luad = getState().iframe.luad + 1;
+						dispatch({type:'LUAD',luad:luad})
 					}
 					dispatch({type:'LIKE',like:res})
 				})
@@ -108,7 +109,7 @@ export function saveLike(message){
 			.then(res =>res.json())
 			.then(json => {
 				if(json.result=="success"){
-					dispatch({type:'LUAD',luad:json.luad});
+					dispatch({type:'LUAD',luad:json.luadnum});
 					dispatch({type:'STORE',store:json.store});
 				}
 				dispatch({type:'SAVELIKE',is:json})
@@ -125,8 +126,8 @@ export function clear(){
 //获取关键字
 export function keyword(key){
 	console.log(key)
-	//const kurl = baseUrl + "search/getkeyworlds?topicid="+key;
-	const kurl = "https://nccloud.weihong.com.cn/nccloudOLhelp/search/getkeyworlds?topicid="+key;
+	const kurl = baseUrl + "search/getkeyworlds?topicid="+key;
+	//const kurl = "https://nccloud.weihong.com.cn/nccloudOLhelp/search/getkeyworlds?topicid="+key;
 	return dispatch => {
 		return fetch(kurl)
 			.then(res =>res.json())
@@ -134,5 +135,12 @@ export function keyword(key){
 				console.log(json)
 				dispatch({type:'GET_KEYWORD',key:json})
 			})
+	}
+}
+
+
+export function topicid(id){
+	return dispatch => {
+		dispatch({type:'TOPICID',id:id})
 	}
 }

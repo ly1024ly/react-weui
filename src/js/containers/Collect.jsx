@@ -38,6 +38,7 @@ class Collect extends Component {
 	}
 	componentDidMount(){
 		document.title = '我的收藏';
+		$(".hint").css("display",'none');
 		if(JSON.stringify(this.props.collect.chart)=="{}"){
 			this.props.collectAction.getCollect("rxt123");
 			//this.props.collectAction.getCollect(this.state.user.username);
@@ -52,6 +53,7 @@ class Collect extends Component {
 	
 	//点击菜单刷新页面
 	reflesh(){
+		$(".hint").css("display",'none');
 		//this.props.collectAction.getCollect(this.state.user.username);
 		this.props.collectAction.getCollect("rxt123");
 		if(this.state.val===""){
@@ -74,11 +76,13 @@ class Collect extends Component {
 	checkValue(e){
 		e.preventDefault();
 		let q;
+		$(".hint").css("display",'none');
+		$(".cd-pagination li").removeClass("noclick");
 		var select = e.target.innerHTML;
 		if(select=="搜全站"){
 			this.setState({
 				style:false			
-			})
+			});
 			this.props.collectAction.current(1);
 			if(this.state.val){
 				q = this.state.val;
@@ -105,12 +109,13 @@ class Collect extends Component {
 		}	
 	}
 	delete(res){
+		console.log("res="+res)
 		let obj = {};
 		//obj.username = this.state.user.username;
 		obj.username = "rxt123";
 		obj.topicid = res.result.topicid;
 		obj.title = res.result.title;
-		obj.filename = res.result.filename;
+		obj.topicURL = res.html;
 		obj.ContentType = res.result.ContentType;
 		obj.status = false;
 		this.props.collectAction.deCollect(obj,this.props.collect.collect);
@@ -118,10 +123,10 @@ class Collect extends Component {
 	saveVal(e){
 		this.setState({
 			val:e.target.value
-		})
+		});
+		$(".hint").css("display",'block');
+		this.props.collectAction.promtMessage(e.target.value)
 	}
-
-
 	remove(i){
 		$(".weui-cells").find(".cbox").eq(i).remove();
 	}
@@ -180,10 +185,19 @@ class Collect extends Component {
 			back:index
 		})
 	}
+	propSearch(e){
+		console.log("search"+this.state.val)
+		$(".hint").css("display",'block');
+		this.setState({
+			val:e
+		})
+		$(".hint").css("display",'none');
+	}
 	pageChange(res){
 		let max = this.props.collect.chart.message.Maxpage;
 		let val = this.state.val||this.props.collect.val
 		let page;
+		$(".cd-pagination li").removeClass("noclick");
 		if(this.props.collect.page){
 			page = this.props.collect.page;
 			this.setState({
@@ -206,6 +220,7 @@ class Collect extends Component {
 					page:1
 				})
 				this.props.collectAction.cpage(1);
+				$(".button1").addClass("noclick");
 				$(".s").addClass("noclick");
 			}
 			
@@ -217,6 +232,7 @@ class Collect extends Component {
 				})
 				this.props.collectAction.cpage(page);
 				$(".s").removeClass("noclick");
+				$(".cd-pagination li").removeClass("noclick");
 				this.props.collectAction.searchAll(val,page)
 			}else{
 				$(".e").addClass("noclick");
@@ -226,8 +242,13 @@ class Collect extends Component {
 			this.setState({
 				page:res
 			})
-			$(".s").removeClass("noclick");
-			$(".e").removeClass("noclick");
+			if(res==1){
+				$(".s").addClass("noclick");
+				$(".button1").addClass("noclick");
+			}else{
+				$(".e").addClass("noclick");
+				$(".button2").addClass("noclick");
+			}
 			this.props.collectAction.cpage(res)
 			this.props.collectAction.searchAll(val,res)
 		}
@@ -243,16 +264,16 @@ class Collect extends Component {
     		value = this.props.collect.val;
     	}
     	let all;
-		let haulf;
-		let page = [];
-		let max;
-		if(this.state.style){
-			haulf={background:'orange',color:'#fff'};
-			all={background:'#fff',color:'orange'};
-		}else{
-			haulf={background:'#fff',color:'orange'};
-			all={background:'orange',color:'#fff'};
-		} 
+			let haulf;
+			let page = [];
+			let max;
+			if(this.state.style){
+				haulf={background:'orange',color:'#fff'};
+				all={background:'#fff',color:'orange'};
+			}else{
+				haulf={background:'#fff',color:'orange'};
+				all={background:'orange',color:'#fff'};
+			} 
     	let result;
     	if(JSON.stringify(this.props.collect.collect)!=="{}"){
     		result = this.props.collect.collect;
@@ -270,6 +291,7 @@ class Collect extends Component {
     			let display = this.props.collect.title&&this.props.collect.title.del == item.result.topicid ? "none" : "block"
     			let width = this.state.back===index ? "" : "back";
     			let show = this.state.back===index ? "block" : "none";
+    			console.log("item="+item)
     			return (
     			<div className="x" key={index} onTouchMove={this.touchEvent.bind(this,index)} >
     				<div className={"cbox "+width} key={index} style={{display:display}} >
@@ -353,19 +375,35 @@ class Collect extends Component {
 			list = menu ? menu : "";
 		}
 		let display = max ? "block" : "none";
-			
+		let popm;
+		console.log(this.props.collect)
+		if(this.props.collect.message){
+	 		popm = this.props.collect.message.map(function(item,index){
+	 			if(index<5){
+		 			return (
+		 				<li onClick={this.propSearch.bind(this,item)} key={index}>{item}</li>
+		 			)
+	 			}	
+	 		
+	 		},this)
+	 	}	
         return (
         	<div>
         		<div className="content collect">
 	        		<div className="search-box" >
 					  	<div className="search-input"> 
-					  		<input type="text" placeholder="关键字" defaultValue={value} ref="inname" className="search" onChange={this.saveVal} onBlur={this.blurEvent}/>
+					  		<input type="text" placeholder="关键字" value={this.state.val} className="search" onChange={this.saveVal} onBlur={this.blurEvent}/>
 						</div>
 						<div className="search-btn">
 							<label type="button" className="btn" style={haulf}
 							onClick={this.checkValue}>搜本页</label>
 							<label className="btn" style={all}
 							onClick={this.checkValue} >搜全站</label>
+						</div>
+						<div className="hint" id="hint" >
+			  		 	<ul >
+			  		 		{popm}
+			  		 	</ul>
 						</div>
 					</div>
 					<div className="weui-cells">

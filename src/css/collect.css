@@ -81,6 +81,9 @@
 li.current{
     color: red;
 }
+.search-box{
+    position:relative;
+}
 .weui-icon-warn {
     font-size:50px;
 }
@@ -129,6 +132,7 @@ li.current{
     100% {width:80px;}
 }
 .weui-cell__bd p{
+    width:80%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -137,4 +141,22 @@ li.current{
 .back{
     width:100%!important;
     left:initial;
+}
+.hint{
+    width:100%;
+    z-index:2;
+    position: absolute;
+    top:37px;
+    box-sizing: border-box;
+    display:none;
+    background: #fff;
+    border:1px solid #ccc;
+}
+.hint li{
+    padding:5px;
+    color: #333;
+    font-size:0.6rem;
+}
+.hint li:hover{
+    background: #eee;
 }

@@ -1,49 +1,40 @@
-import * as actionTypes from '../constants/fileSearch';
+import * as actionTypes from '../constants/iframe'
 
-const initialState = {}
-let chart = {}
-let auto = {}
-let current = {}
-let message = {}
-let wechat = {}
-export default function fileSearch(state = initialState,action){
-  switch(action.type) {
-    case actionTypes.FIND_SEARCH:
-      chart = JSON.parse(JSON.stringify(action))
-      // return  {
-      //           ...state,
-      //           current:current,
-      //           auto:auto,
-      //           chart:action
-      //         }
-
-      return Object.assign({},state,current,auto,chart,wechat)
-    case actionTypes.CURRENT_PAGE:
-      return Object.assign({},action,wechat)
-    case actionTypes.TWO_MENU:
+const initialState = {} 
+let is = {}
+let luad = {}
+let store = {}
+let key = {}
+let id = {}
+let like = {}
+export default function(state = initialState,action){
+  switch(action.type){
+    case actionTypes.LIKE:  
+      like = JSON.parse(JSON.stringify(action))
+      return Object.assign({},id,luad,store,key)
+    case actionTypes.SAVELIKE:
+      is = JSON.parse(JSON.stringify(action))
+      return Object.assign({},id,luad,store,key)
+    case actionTypes.COLLECT_FILE:
+      return Object.assign({},id,luad,store,key)
+    case actionTypes.CLEAR:
       return action
-    case actionTypes.THREE_MENU:
-      return action
-    case actionTypes.BACK:
-      return action
-    case actionTypes.PAGE:
-      return action
-    case actionTypes.AUTO:
-      auto = JSON.parse(JSON.stringify(action))
-      return Object.assign({},state,current,auto,chart,wechat)
-    case actionTypes.CURRENT:
-      current = JSON.parse(JSON.stringify(action))
-      return Object.assign({},state,current,auto,chart,wechat)
-    case actionTypes.SAVE_VALUE:
-      return action
-    case actionTypes.VAL:
-      return action
-    case actionTypes.INIT_WECHART:
-      wechat = JSON.parse(JSON.stringify(action))
-      return Object.assign({},state,current,message,chart,wechat)
-    case actionTypes.MESSAGE:
-      message = JSON.parse(JSON.stringify(action))
-      return Object.assign({},state,current,message,chart,wechat)
+    case actionTypes.INITIAL_WECHAT:
+      return Object.assign(is,luad,store,state,action);
+    case actionTypes.DEL_COLLECT:
+      return Object.assign({},key,id,luad,JSON.parse(JSON.stringify(action)))
+    case actionTypes.LUAD:
+      luad = JSON.parse(JSON.stringify(action))
+      return Object.assign({},key,id,luad,JSON.parse(JSON.stringify(action)))
+    case actionTypes.STORE:
+      store = JSON.parse(JSON.stringify(action))
+      return Object.assign({},key,id,luad,store)
+    case actionTypes.GET_KEYWORD:
+      key = JSON.parse(JSON.stringify(action))
+      return Object.assign({},state,is,like,id,luad,store,key)
+    case actionTypes.TOPICID:
+      id = JSON.parse(JSON.stringify(action))
+      return Object.assign({},state,is,luad,store,id)
     default:
       return state
   }

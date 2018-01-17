@@ -73,18 +73,17 @@ class AddFile extends Component{
 	}
 	handler = (e) =>{
 		if(this.state.val===""){
-
 			this.props.fileAction.all("yang6")
 		}else{
 			this.props.fileAction.list(this.state.val)
 		}	
 	}
 	render(){
-		let a = "hhh";
 		let addFile;
 		let list;
 		if(this.props.addfile.success&&this.props.addfile.success.result=="success"){
 			$.toast("添加成功");
+			window.location.reload();
 			this.props.addfile.success = {};
 		}else if(this.props.addfile.success&&this.props.addfile.success.result=="fail"){
 			$.toast(this.props.addfile.success.message)

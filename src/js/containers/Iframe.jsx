@@ -27,7 +27,8 @@ class Iframe extends Component {
             user:{},
             height:'',
             docHeight:'',
-            contentType:''
+            contentType:'',
+            topic:''
         }
         const { store } = this.context;
         this.like = this.like.bind(this);
@@ -56,56 +57,78 @@ class Iframe extends Component {
         //跨域
         let contentType;
         var that = this;
-         let collect = {};
-         //collect.username = this.state.user.username;
-        collect.username = "rxt123";
-        collect.topicid = this.props.location.query.id||this.props.location.query.topicid;
-        collect.title = this.props.location.query.title;
-        collect.topicURL = this.props.location.query.href||this.props.location.query.url;
-        let framecont = document.getElementById("frameContent");
+        let topicid = '';
+        let collect = {};
+        var reader = new FileReader();  
+        var framecont = document.getElementById("frameContent");
+        var doc = framecont.contentWindow;
         framecont.onload = function(e){
+            doc.addEventListener('click',function(event){
+                if(event.target.tagName=='A'){
+                    delete that.props.iframe.like;
+                    that.props.location.query.href = event.target.href;
+                }
+                
+            });
             e.path.forEach(function(value){
                 if(value&&value.tagName=="IFRAME"){
                     let ht = value.contentWindow.document.children[0].children;
-                    for(var h of ht){
-                    console.log(h)
-                        if(h&&h.tagName=="HEAD"){
-                            h.childNodes.forEach(function(e){
-                               if(e.name == "ContentType"){
-                                    contentType = e.content;
-                                    collect.ContentType = e.content;
+                    for(var i in ht){
+                        if(ht[i].tagName=="HEAD"){
+                            for(var e in ht[i].childNodes){
+                               if(ht[i].childNodes[e].name == "ContentType"){
+                                    contentType = ht[i].childNodes[e].content;
+                                    collect.ContentType = ht[i].childNodes[e].content;
                                }
-                            })
+                            }
+                        }
+                        if(ht[i].tagName=='BODY'){
+                            let id = ht[i].getAttribute("id");
+                            topicid = id;
+                            that.props.iframeAction.topicid(id);
                         }
                     }
                 }
             },this)
+            let title = document.getElementById("frameContent").contentWindow.document.getElementsByTagName("h1")[0].innerText;
+            let user = that.state.user;
+            //collect.username = that.state.user.username;
+            collect.username = "rxt123";
+            collect.topicid = topicid;
+            collect.title = title;
+            collect.topicURL = that.props.location.query.href||that.props.location.query.url;
+            if(that.props.location.query.ContentType){
+                collect.ContentType = that.props.location.query.ContentType
+            }else if(collect.ContentType===undefined){
+                collect.ContentType = "其他";
+            }
+            console.log(collect);
+            let obj = {};
+            //obj.username = that.state.user.username;
+            obj.username="rxt123";
+            obj.topicid = topicid;
+            obj.title = title;
+
+            that.setState({
+                like: obj,
+                collect:collect,
+                topic:topicid
+            });
+            let o = {};
+            //o.username = user.username;
+            o.username = "rxt123";
+            o.topicid = topicid;
+            that.props.iframeAction.keyword(topicid);
+            that.props.iframeAction.saveLike(o);
         }
+        console.log(contentType,topicid)
         $(window).scrollTop(0);
         this.setState({
             height:window.screen.height
         })
         let height = document.body.clientHeight ;
         height = height - 30 + "px";
-        $(".ss").css("height",height) 
-        let user = this.state.user;
-        let obj = {};
-        //obj.username = this.state.user.username;
-        console.log(this.props.location.query.href);
-        obj.username="rxt123";
-        obj.topicid = this.props.location.query.id||this.props.location.query.topicid;
-        obj.title = this.props.location.query.title;
-
-        this.setState({
-            like: obj,
-            collect:collect
-        });
-        let o = {};
-        //o.username = user.username;
-        o.username = "rxt123";
-        o.topicid = this.props.location.query.id;
-        this.props.iframeAction.keyword(this.props.location.query.id);
-        this.props.iframeAction.saveLike(o);
+        $(".ss").css("height",height);
         this.props.iframeAction.wechat();
         document.documentElement.scrollTop = 0;
         console.log(document.documentElement.scrollTop )
@@ -150,8 +173,12 @@ class Iframe extends Component {
         const state = store.getState();
         console.log(this.props.iframe)
         let success = false;
-        if (this.props.iframe.luad) {
-            success = this.props.iframe.luad;
+        if (this.props.iframe.is&&this.props.iframe.is.luad) {
+            success = this.props.iframe.is.luad;
+        }else if(this.props.iframe.like&&this.props.iframe.like.result=="success"){
+            success = true;
+        }else{
+            success = false;
         }
         //收藏
         let collect = false;
@@ -170,9 +197,9 @@ class Iframe extends Component {
                    )
                 }
             },this)
-        }
+        } 
         //初始化微信接口
-        if (wechat) {
+        if (wechat&&JSON.stringify(wechat)!=="{}") {
             wx.config({
                 debug: false,
                 appId: wechat.values.appId,
@@ -190,16 +217,11 @@ class Iframe extends Component {
                 ],
 
             });
-
-
             var title = "分享经验";
             if(this.props.location.query.title){
                 title = "维宏云在线帮助：" + this.props.location.query.title;
             }
-            let topicid;
-            if(this.props.location.query.topicid){
-                topicid = this.props.location.query.topicid;
-            }
+            let topicid = this.props.iframe.id;
             url = encodeURIComponent(url);
             wx.ready(function() {
                 wx.showOptionMenu();
@@ -208,10 +230,7 @@ class Iframe extends Component {
                     link: "https://nccloud.weihong.com.cn/nchelp/share.html?topicid=" + topicid + "&shareUrl=" + url,
                     imgUrl: "https://nccloud.weihong.com.cn/img/share.jpg",
                     trigger: function(res) {
-                       
-                        
                     },
-
                     success: function(res) {
                         $("#share_btn").css("color","orange");
                     },
@@ -238,6 +257,8 @@ class Iframe extends Component {
         console.log(heights)
         let share = false;
         let display = keyword ? "block" : "none";
+        let luadnum = this.props.iframe.luad;
+
         return ( 
       	  <div id="iframe">
             <div id="shareit" onClick={this.hideFlow}>
@@ -247,7 +268,7 @@ class Iframe extends Component {
                 </div>
             </div>
             <div style={{overflow:'auto',height:heights+"px"}} className="ss">
-			 <iframe id="frameContent" style={{height:document.body.clientHeight+"px"}} src={this.props.location.query.href||this.props.location.query.url}></iframe>
+			    <iframe id="frameContent" style={{width:window.screen.width+"px",height:document.body.clientHeight+"px"}} src={this.props.location.query.href||this.props.location.query.url}></iframe>
             </div>
             <div className="key" style={{display:display}}>
                 <ul>
@@ -258,6 +279,7 @@ class Iframe extends Component {
 			<footer>
 				<div className="iframe">
 					<div className="box">
+                        <span>同行评价{luadnum}赞</span>
 						{success ? <i className="iconfont icon-yes">&#xe63a;</i> : <i className="iconfont icon-no" onClick={this.like}>&#xe67f;</i>}
 						{collect ? <i className="iconfont icon-yes" onClick={this.delcollect.bind(this,false)}>&#xe620;</i> : <i className="iconfont icon-no" onClick={this.collect.bind(this,true)}>&#xe616;</i>}
 						<i className="iconfont" onClick={this.share.bind(this,this.props.iframe.wechat,url)} id="share_btn">&#xe619;</i>

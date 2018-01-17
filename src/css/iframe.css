@@ -24,7 +24,7 @@ footer .iframe{
 }
 .box .iconfont{
 	font-size:30px;
-	margin:20px;
+	margin:10px;
 }
 .iconfont.icon-yes{
 	color:orange;
@@ -86,4 +86,7 @@ article{
 }
 .relinfo{
   margin:0px;
+}
+.box span{
+  color:orange;
 }
