@@ -1,5 +1,6 @@
 var webpack = require('webpack');
 var path = require('path');
+var OpenBrowserPlugin = require('open-browser-webpack-plugin');
 require("babel-polyfill");
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -16,8 +17,8 @@ module.exports = {
   },
   output:{
     path:path.join(__dirname,"assets"),
-   // publicPath:'https://nccloud.weihong.com.cn/nchelp/assets/',
-    publicPath:'/dist/',
+    publicPath:'https://nccloud.weihong.com.cn/nchelp/assets/',
+    //publicPath:'/assets/',
     filename:'js/[name].js',
     chunkFilename:'js/[id].chunk.js'
   },
@@ -68,7 +69,7 @@ module.exports = {
       'window.$': 'jquery',
 
     }),
- 
+    new OpenBrowserPlugin({ url: 'http://localhost:9010/assets/view/index.html' }),
     new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
       filename:'./view/index.html',
