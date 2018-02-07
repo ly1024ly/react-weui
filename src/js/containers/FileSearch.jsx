@@ -446,16 +446,16 @@ class FileSearch extends Component {
 					  		 onChange={this.saveValue}
 					  		 
 					  		 />
-						</div>
-						<div className="search-btn">
-							<label className="btn" style={haulf}
-							onClick={this.checkValue} >搜文档</label>
-							<label className="btn" style={all}
-							onClick={this.checkValue} >搜全站</label>
-							
-						</div>
+							</div>
+							<div className="search-btn">
+								<label className="btn" style={haulf}
+								onClick={this.checkValue} >搜文档</label>
+								<label className="btn" style={all}
+								onClick={this.checkValue} >搜全站</label>
+								
+							</div>
 					</div>
-					<div className="hint" id="hint">
+					<div className="hint" id="hint" >
 			  		 	<ul >
 			  		 		{popm}
 			  		 	</ul>

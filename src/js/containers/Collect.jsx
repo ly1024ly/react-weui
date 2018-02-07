@@ -391,38 +391,38 @@ class Collect extends Component {
         	<div>
         		<div className="content collect">
 	        		<div className="search-box" >
-					  	<div className="search-input"> 
-					  		<input type="text" placeholder="关键字" value={this.state.val} className="search" onChange={this.saveVal} onBlur={this.blurEvent}/>
+						  	<div className="search-input"> 
+						  		<input type="text" placeholder="关键字" value={this.state.val} className="search" onChange={this.saveVal} onBlur={this.blurEvent}/>
+								</div>
+								<div className="search-btn">
+									<label type="button" className="btn" style={haulf}
+									onClick={this.checkValue}>搜本页</label>
+									<label className="btn" style={all}
+									onClick={this.checkValue} >搜全站</label>
+								</div>
+								<div className="hint" id="hint" >
+					  		 	<ul >
+					  		 		{popm}
+					  		 	</ul>
+								</div>
+							</div>
+							<div className="weui-cells">
+							 {list}
+							</div>
+							<div className="holder" style={{display:display}}>
+							    <section>
+									<nav role="navigation">
+										<ul className="cd-pagination">
+											<li className="s" onClick={this.pageChange.bind(this,1)}>首页</li>
+											<li className="button1" onClick={this.pageChange.bind(this,"pre")}>上页</li>
+											
+											<li className="button2" onClick={this.pageChange.bind(this,"next")}>下页</li>
+											<li className="e" onClick={this.pageChange.bind(this,max)}>尾页</li>
+										</ul>
+									</nav> 
+								</section>
+							</div>
 						</div>
-						<div className="search-btn">
-							<label type="button" className="btn" style={haulf}
-							onClick={this.checkValue}>搜本页</label>
-							<label className="btn" style={all}
-							onClick={this.checkValue} >搜全站</label>
-						</div>
-						<div className="hint" id="hint" >
-			  		 	<ul >
-			  		 		{popm}
-			  		 	</ul>
-						</div>
-					</div>
-					<div className="weui-cells">
-					 {list}
-					</div>
-					<div className="holder" style={{display:display}}>
-					    <section>
-							<nav role="navigation">
-								<ul className="cd-pagination">
-									<li className="s" onClick={this.pageChange.bind(this,1)}>首页</li>
-									<li className="button1" onClick={this.pageChange.bind(this,"pre")}>上页</li>
-									
-									<li className="button2" onClick={this.pageChange.bind(this,"next")}>下页</li>
-									<li className="e" onClick={this.pageChange.bind(this,max)}>尾页</li>
-								</ul>
-							</nav> 
-						</section>
-					</div>
-				</div>
 				<footer>
 					 <div className="weui-tabbar">
 				    	<Link to="" className="weui-tabbar__item weui-bar__item--on" >
